@@ -5,24 +5,29 @@ var assert = require('assert'),
 describe('Iyzipay', function () {
 
     var iyziWsHeaderName;
+    var iyziWsHeaderNameV2;
     var apiKey;
     var secretKey;
     var separator;
     var randomString;
+    var uri;
     var body;
 
     before(function () {
         iyziWsHeaderName = "IYZWS";
+        iyziWsHeaderNameV2 = 'IYZWSv2';
         apiKey = "api_key";
         secretKey = "secret_key";
         separator = ":";
         randomString = "random_string";
+        uri= "uri";
         body = "body";
     });
 
     it('should return api methods', function (done) {
         var apiMethods = {
             RETRIEVE: 'retrieve',
+            RETRIEVE_ALL: 'retrieveAll',
             CREATE: 'create',
             DELETE: 'delete',
             UPDATE: 'update'
@@ -37,9 +42,21 @@ describe('Iyzipay', function () {
         done();
     });
 
+    it('should generate authorization header v2', function (done) {
+        var header = utils.generateAuthorizationHeaderV2(iyziWsHeaderNameV2, apiKey, separator, secretKey, uri, body, randomString);
+        header.should.be.equal("IYZWSv2 YXBpS2V5OmFwaV9rZXkmcmFuZG9tS2V5OnJhbmRvbV9zdHJpbmcmc2lnbmF0dXJlOjAxNzUwODkyMWEyOWVlNTYwMWJjZDFmYmU4M2VmZDJlMmJlNDNhZjAyZWNlZmYzMGNmMmU5MWE1MzlhYWIzNTU=");
+        done();
+    });
+
     it('should generate hash', function (done) {
         var hash = utils.generateHash(apiKey, randomString, secretKey, body);
         hash.should.be.equal("ikF+xhjLA0/xsvl+eJjoHWkwh5g=");
+        done();
+    });
+
+    it('should generate hash v2', function (done) {
+        var hash = utils.generateHashV2(apiKey, separator, uri, randomString, secretKey, body);
+        hash.should.be.equal("YXBpS2V5OmFwaV9rZXkmcmFuZG9tS2V5OnJhbmRvbV9zdHJpbmcmc2lnbmF0dXJlOjAxNzUwODkyMWEyOWVlNTYwMWJjZDFmYmU4M2VmZDJlMmJlNDNhZjAyZWNlZmYzMGNmMmU5MWE1MzlhYWIzNTU=");
         done();
     });
 
